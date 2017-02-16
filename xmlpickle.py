@@ -34,36 +34,30 @@ class Unpicklable(Exception):
     pass
 
 
-def _dump_dict(obj, parent, strict=False):
+def _dump_dict(obj, parent):
     node = parent
     node.attrib['type'] = 'dict'
     for key, val in obj.items():
         itemelem = ET.SubElement(node, 'item', key=str(key))
-        _dump(val, itemelem, strict=strict)
+        _dump(val, itemelem)
     return node
 
 
-def _dump_list(obj, parent, strict=False):
+def _dump_list(obj, parent):
     node = parent
     node.attrib['type'] = 'list'
     for idx, val in enumerate(obj):
         itemelem = ET.SubElement(node, 'item', index=str(idx))
-        _dump(val, itemelem, strict=strict)
+        _dump(val, itemelem)
     return node
 
 
-def _dump(obj, parent, strict=False):
+def _dump(obj, parent):
     if isinstance(obj, dict):
         return _dump_dict(obj, parent)
-    if isinstance(obj, list):
+    elif isinstance(obj, list):
         return _dump_list(obj, parent)
-    if (isinstance(obj, tuple) or isinstance(obj, set) or
-        isinstance(obj, frozenset)
-    ):
-        if strict:
-            raise Unpicklable()
-        return _dump_list(obj, parent, strict=strict)
-    if isinstance(obj, bool):
+    elif isinstance(obj, bool):
         tag = "bool"
     elif isinstance(obj, int):
         tag = "int"
@@ -118,11 +112,11 @@ def _load(node, ntype):
     return Malformed()
 
 
-def dump(obj, strict=False, root=None):
+def dump(obj, root=None):
     if root is None:
         root = ET.Element(ROOT)
     parent = ET.SubElement(root, 'value')
-    _dump(obj, parent, strict=strict)
+    _dump(obj, parent)
     return root
 
 
