@@ -27,10 +27,10 @@ class Unpicklable(Exception):
     pass
 
 
-def dump(obj, parent=None):
-    if parent is None:
+def dump(obj, root=None):
+    if root is None:
         root = ET.Element('pyxmlpickle')
-        parent = ET.SubElement(root, 'value')
+    parent = ET.SubElement(root, 'value')
     _dump(obj, parent)
     return root
 
@@ -47,19 +47,7 @@ def _dump(obj, parent):
     return _dump_type(obj, parent)
 
 
-def _dump_dict_pedantic(obj, parent):
-    node = ET.SubElement(parent, 'pydict')
-    for key, val in obj.items():
-        itemelem = ET.SubElement(node, 'item')
-        keyelem = ET.SubElement(itemelem, 'key')
-        _dump(key, keyelem)
-        valelem = ET.SubElement(itemelem, 'value')
-        _dump(val, valelem)
-    return node
-
-
 def _dump_dict(obj, parent):
-#    node = ET.SubElement(parent, 'pydict')
     node = parent
     node.attrib['type'] = 'dict'
     for key, val in obj.items():
@@ -69,29 +57,12 @@ def _dump_dict(obj, parent):
 
 
 def _dump_list(obj, parent):
-#    node = ET.SubElement(parent, 'pylist')
     node = parent
     node.attrib['type'] = 'list'
     for idx, val in enumerate(obj):
         itemelem = ET.SubElement(node, 'item', index=str(idx))
         _dump(val, itemelem)
     return node
-
-
-def _dump_type_pedantic(obj, parent):
-    if isinstance(obj, bool):
-        tag = "pybool"
-    elif isinstance(obj, int):
-        tag = "pyint"
-    elif isinstance(obj, float):
-        tag = "pyfloat"
-    elif isinstance(obj, str):
-        tag = "pystr"
-    else:
-        raise Unpicklable(repr(obj))
-    x = ET.SubElement(parent, tag)
-    x.text = str(obj)
-    return x
 
 
 def _dump_type(obj, parent):
@@ -105,7 +76,6 @@ def _dump_type(obj, parent):
         tag = "str"
     else:
         raise Unpicklable(repr(obj))
-#    x = ET.SubElement(parent, 'value')
     x = parent
     x.attrib['type'] = tag
     x.text = str(obj)
