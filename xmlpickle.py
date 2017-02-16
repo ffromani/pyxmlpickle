@@ -34,8 +34,7 @@ class Unpicklable(Exception):
     pass
 
 
-def _dump_dict(obj, parent):
-    node = parent
+def _dump_dict(obj, node):
     node.attrib['type'] = 'dict'
     for key, val in obj.items():
         itemelem = ET.SubElement(node, 'item', key=str(key))
@@ -43,8 +42,7 @@ def _dump_dict(obj, parent):
     return node
 
 
-def _dump_list(obj, parent):
-    node = parent
+def _dump_list(obj, node):
     node.attrib['type'] = 'list'
     for idx, val in enumerate(obj):
         itemelem = ET.SubElement(node, 'item', index=str(idx))
