@@ -39,35 +39,35 @@ Examples
 
 object:
   
-  custom = {
-    'containerType': [
-      'docker',
-      'rkt'
-    ],
-    'containerImage': 'redis',
-      'driveMap': {
-        'vda': '/data',
-      },
-  }
-  
+    custom = {
+      'containerType': [
+        'docker',
+        'rkt'
+      ],
+      'containerImage': 'redis',
+        'driveMap': {
+          'vda': '/data',
+        },
+    }
+    
 
 XML:
 
-  
-  <?xml version="1.0" ?>
-  <pyxmlpickle>
-    <value type="dict">
-      <item key="containerType" type="list">
-        <item index="0" type="str">docker</item>
-        <item index="1" type="str">rkt</item>
-      </item>
-      <item key="containerImage" type="str">redis</item>
-      <item key="driveMap" type="dict">
-        <item key="vda" type="str">/data</item>
-      </item>
-    </value>
-  </pyxmlpickle>
-  
+    
+    <?xml version="1.0" ?>
+    <pyxmlpickle>
+      <value type="dict">
+        <item key="containerType" type="list">
+          <item index="0" type="str">docker</item>
+          <item index="1" type="str">rkt</item>
+        </item>
+        <item key="containerImage" type="str">redis</item>
+        <item key="driveMap" type="dict">
+          <item key="vda" type="str">/data</item>
+        </item>
+      </value>
+    </pyxmlpickle>
+    
 
 check demo.py for more
 
