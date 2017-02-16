@@ -34,28 +34,6 @@ class Unpicklable(Exception):
     pass
 
 
-def dump(obj, strict=False, root=None):
-    if root is None:
-        root = ET.Element(ROOT)
-    parent = ET.SubElement(root, 'value')
-    _dump(obj, parent, strict=strict)
-    return root
-
-
-def _dump(obj, parent, strict=False):
-    if isinstance(obj, dict):
-        return _dump_dict(obj, parent)
-    if isinstance(obj, list):
-        return _dump_list(obj, parent)
-    if (isinstance(obj, tuple) or isinstance(obj, set) or
-        isinstance(obj, frozenset)
-    ):
-        if strict:
-            raise Unpicklable()
-        return _dump_list(obj, parent, strict=strict)
-    return _dump_type(obj, parent)
-
-
 def _dump_dict(obj, parent, strict=False):
     node = parent
     node.attrib['type'] = 'dict'
@@ -74,7 +52,17 @@ def _dump_list(obj, parent, strict=False):
     return node
 
 
-def _dump_type(obj, parent):
+def _dump(obj, parent, strict=False):
+    if isinstance(obj, dict):
+        return _dump_dict(obj, parent)
+    if isinstance(obj, list):
+        return _dump_list(obj, parent)
+    if (isinstance(obj, tuple) or isinstance(obj, set) or
+        isinstance(obj, frozenset)
+    ):
+        if strict:
+            raise Unpicklable()
+        return _dump_list(obj, parent, strict=strict)
     if isinstance(obj, bool):
         tag = "bool"
     elif isinstance(obj, int):
@@ -113,11 +101,13 @@ def _load_list(node):
     return ret
 
 
-def _load_type(node, ntype):
-    if ntype is None:
-        raise Malformed()
+def _load(node, ntype):
     ntype = ntype.lower()
-    if ntype == 'bool':
+    if ntype == 'dict':
+        return _load_dict(node)
+    elif ntype == 'list':
+        return _load_list(node)
+    elif ntype == 'bool':
         return bool(node.text.lower() == 'true')
     elif ntype == 'int':
         return int(node.text)
@@ -128,12 +118,12 @@ def _load_type(node, ntype):
     return Malformed()
 
 
-def _load(node, ntype):
-    if ntype == 'dict':
-        return _load_dict(node)
-    elif ntype == 'list':
-        return _load_list(node)
-    return _load_type(node, node.attrib.get('type'))
+def dump(obj, strict=False, root=None):
+    if root is None:
+        root = ET.Element(ROOT)
+    parent = ET.SubElement(root, 'value')
+    _dump(obj, parent, strict=strict)
+    return root
 
 
 def load(node, root=None):
