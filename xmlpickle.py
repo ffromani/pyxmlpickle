@@ -34,18 +34,33 @@ class Unpicklable(Exception):
     pass
 
 
+
+# used as namespace
+class Tags(object):
+    ROOT = 'pyxmlpickle'
+    VALUE = 'value'
+    ITEM = 'item'
+
+
+# used as namespace
+class Attrib(object):
+    TYPE = 'type'
+    INDEX = 'index'
+    KEY = 'key'
+
+
 def _dump_dict(obj, node):
-    node.attrib['type'] = 'dict'
+    node.attrib[Attrib.TYPE] = 'dict'
     for key, val in obj.items():
-        itemelem = ET.SubElement(node, 'item', key=str(key))
+        itemelem = ET.SubElement(node, Tags.ITEM, key=str(key))
         _dump(val, itemelem)
     return node
 
 
 def _dump_list(obj, node):
-    node.attrib['type'] = 'list'
+    node.attrib[Attrib.TYPE] = 'list'
     for idx, val in enumerate(obj):
-        itemelem = ET.SubElement(node, 'item', index=str(idx))
+        itemelem = ET.SubElement(node, Tags.ITEM, index=str(idx))
         _dump(val, itemelem)
     return node
 
@@ -66,7 +81,7 @@ def _dump(obj, parent):
     else:
         raise Unpicklable(repr(obj))
     x = parent
-    x.attrib['type'] = tag
+    x.attrib[Attrib.TYPE] = tag
     x.text = str(obj)
     return x
 
@@ -74,8 +89,8 @@ def _dump(obj, parent):
 def _load_dict(node):
     ret = {}
     for item in node.findall('./item'):
-        key = item.attrib.get('key')
-        ntype = item.attrib.get('type')
+        key = item.attrib.get(Attrib.KEY)
+        ntype = item.attrib.get(Attrib.TYPE)
         if key is None or ntype is None:
             raise Malformed()
         ret[str(key)] = _load(item, ntype)
@@ -85,8 +100,8 @@ def _load_dict(node):
 def _load_list(node):
     ret = []
     for item in node.findall('./item'):
-        idx = item.attrib.get('index')
-        ntype = item.attrib.get('type')
+        idx = item.attrib.get(Attrib.INDEX)
+        ntype = item.attrib.get(Attrib.TYPE)
         if idx is None or ntype is None:
             raise Malformed()
         ret.append(_load(item, ntype))
@@ -112,21 +127,21 @@ def _load(node, ntype):
 
 def dump(obj, root=None):
     if root is None:
-        root = ET.Element(ROOT)
-    parent = ET.SubElement(root, 'value')
+        root = ET.Element(Tags.ROOT)
+    parent = ET.SubElement(root, Tags.VALUE)
     _dump(obj, parent)
     return root
 
 
 def load(node, root=None):
     if root is None:
-        root = ROOT
+        root = Tags.ROOT
     if node.tag != root:
         raise Malformed()
-    value = node.find('./value')
+    value = node.find('./%s' % Tags.VALUE)
     if value is None:
         raise Malformed()
-    return _load(value, value.attrib.get('type'))
+    return _load(value, value.attrib.get(Attrib.TYPE))
 
 
 def dumps(obj):
