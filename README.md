@@ -6,7 +6,7 @@ pyxmlpickle
 Overview
 --------
 
-python2 module to pickle objects to/from XML.
+python2.7/3.5+ module to pickle objects to/from XML.
 Works under the key assumption that dictionary keys are always and only strings.
 
 The supported objects are actually a subset of picklable objects:
