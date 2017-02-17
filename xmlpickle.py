@@ -65,11 +65,11 @@ def _dump_list(obj, node):
     return node
 
 
-def _dump(obj, parent):
+def _dump(obj, node):
     if isinstance(obj, dict):
-        return _dump_dict(obj, parent)
+        return _dump_dict(obj, node)
     elif isinstance(obj, list):
-        return _dump_list(obj, parent)
+        return _dump_list(obj, node)
     elif isinstance(obj, bool):
         tag = "bool"
     elif isinstance(obj, int):
@@ -80,35 +80,33 @@ def _dump(obj, parent):
         tag = "str"
     else:
         raise Unpicklable(repr(obj))
-    x = parent
-    x.attrib[Attrib.TYPE] = tag
-    x.text = str(obj)
-    return x
+    node.attrib[Attrib.TYPE] = tag
+    node.text = str(obj)
+    return node
 
 
 def _load_dict(node):
     ret = {}
     for item in node.findall('./item'):
         key = item.attrib.get(Attrib.KEY)
-        ntype = item.attrib.get(Attrib.TYPE)
-        if key is None or ntype is None:
+        if key is None:
             raise Malformed()
-        ret[str(key)] = _load(item, ntype)
+        ret[str(key)] = _load(item, item.attrib.get(Attrib.TYPE))
     return ret
 
 
 def _load_list(node):
     ret = []
     for item in node.findall('./item'):
-        idx = item.attrib.get(Attrib.INDEX)
-        ntype = item.attrib.get(Attrib.TYPE)
-        if idx is None or ntype is None:
+        if item.attrib.get(Attrib.INDEX) is None:
             raise Malformed()
-        ret.append(_load(item, ntype))
+        ret.append(_load(item, item.attrib.get(Attrib.TYPE)))
     return ret
 
 
 def _load(node, ntype):
+    if ntype is None:
+        raise Malformed()
     ntype = ntype.lower()
     if ntype == 'dict':
         return _load_dict(node)
@@ -128,8 +126,8 @@ def _load(node, ntype):
 def dump(obj, root=None):
     if root is None:
         root = ET.Element(Tags.ROOT)
-    parent = ET.SubElement(root, Tags.VALUE)
-    _dump(obj, parent)
+    node = ET.SubElement(root, Tags.VALUE)
+    _dump(obj, node)
     return root
 
 
