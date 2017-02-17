@@ -27,6 +27,14 @@ class XMLPickleTests(unittest.TestCase):
             },
             'memoryMegs': 4096,
             'maxLoad': 0.99,
+            'physCPUs': (
+                0,
+                1,
+            ),
+            'allowedNodes': set((
+                0,
+                3
+            )),
         }
         serialized = xmlpickle.dumps(obj)
         rebuilt = xmlpickle.loads(serialized)

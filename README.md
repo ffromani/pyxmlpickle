@@ -14,7 +14,6 @@ The supported objects are actually a subset of picklable objects:
 - dict
 - list
 - set
-- frozenset
 - tuple
 - int
 - float

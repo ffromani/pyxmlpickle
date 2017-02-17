@@ -57,8 +57,8 @@ def _dump_dict(obj, node):
     return node
 
 
-def _dump_list(obj, node):
-    node.attrib[Attrib.TYPE] = 'list'
+def _dump_sequence(obj, seq_type, node):
+    node.attrib[Attrib.TYPE] = seq_type
     for idx, val in enumerate(obj):
         itemelem = ET.SubElement(node, Tags.ITEM, index=str(idx))
         _dump(val, itemelem)
@@ -69,7 +69,11 @@ def _dump(obj, node):
     if isinstance(obj, dict):
         return _dump_dict(obj, node)
     elif isinstance(obj, list):
-        return _dump_list(obj, node)
+        return _dump_sequence(obj, 'list', node)
+    elif isinstance(obj, tuple):
+        return _dump_sequence(obj, 'tuple', node)
+    elif isinstance(obj, set):
+        return _dump_sequence(obj, 'set', node)
     elif isinstance(obj, bool):
         tag = "bool"
     elif isinstance(obj, int):
@@ -95,13 +99,13 @@ def _load_dict(node):
     return ret
 
 
-def _load_list(node):
+def _load_sequence(node, seq_class):
     ret = []
     for item in node.findall('./item'):
         if item.attrib.get(Attrib.INDEX) is None:
             raise Malformed()
         ret.append(_load(item, item.attrib.get(Attrib.TYPE)))
-    return ret
+    return seq_class(ret)
 
 
 def _load(node, ntype):
@@ -111,7 +115,11 @@ def _load(node, ntype):
     if ntype == 'dict':
         return _load_dict(node)
     elif ntype == 'list':
-        return _load_list(node)
+        return _load_sequence(node, list)
+    elif ntype == 'tuple':
+        return _load_sequence(node, tuple)
+    elif ntype == 'set':
+        return _load_sequence(node, set)
     elif ntype == 'bool':
         return bool(node.text.lower() == 'true')
     elif ntype == 'int':
