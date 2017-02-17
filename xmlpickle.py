@@ -107,7 +107,7 @@ def _load(node, ntype):
         return float(node.text)
     elif ntype == 'str':
         return str(node.text)
-    return Malformed()
+    raise Malformed()
 
 
 def dump(obj, root=None):
@@ -133,5 +133,5 @@ def dumps(obj):
     return ET.tostring(dump(obj), encoding='UTF-8')
 
 
-def loads(xml_string):
-    return load(ET.fromstring(xml_string))
+def loads(xml_string, root=None):
+    return load(ET.fromstring(xml_string), root=root)

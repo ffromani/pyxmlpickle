@@ -1,0 +1,17 @@
+Metadata-Version: 1.1
+Name: xmlpickle
+Version: 0.0.1
+Summary: Pickle objects to/from XML
+Home-page: https://github.com/fromanirh/pyxmlpickle
+Author: Francesco Romani
+Author-email: fromani@redhat.com
+License: GPL
+Description: 
+	Pickle objects to/from XML
+        
+Platform: posix
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: POSIX
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Utilities
