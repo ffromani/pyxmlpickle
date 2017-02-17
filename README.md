@@ -27,11 +27,11 @@ TODO
 Roughly ordered in decreasing priority
 
 0. finalize the format
-1. load functions
+1. ~~load functions~~
 2. namespace handling
-3. tests (100% coverage)
+3. ~~tests (100% coverage)~~
 4. docs
-5. proper python packaging
+5. ~~proper python packaging~~
 6. PyPI entry
 
 
