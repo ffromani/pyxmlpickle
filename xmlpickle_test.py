@@ -14,6 +14,55 @@ class _DummyClass(object):
 
 class XMLPickleTests(unittest.TestCase):
 
+    def test_malformed_namespace(self):
+        obj = [
+            1,
+            {
+                'foo': 'bar',
+            },
+            False,
+        ]
+        with pytest.raises(xmlpickle.Error):
+            serialized = xmlpickle.dumps(
+                obj,
+                namespace_uri='https://github.com/fromanirh/pyxmlpickle/1.0'
+            )
+
+    def test_pod_object_roundtrip_namespace(self):
+        obj = {
+            'containerType': [
+                'docker',
+                'rkt'
+            ],
+            'enabled': True,
+            'containerImage': 'redis',
+            'driveMap': {
+                'vda': '/data',
+            },
+            'memoryMegs': 4096,
+            'maxLoad': 0.99,
+            'physCPUs': (
+                0,
+                1,
+            ),
+            'allowedNodes': set((
+                0,
+                3
+            )),
+        }
+        serialized = xmlpickle.dumps(
+            obj,
+            namespace='pyxp',
+            namespace_uri='https://github.com/fromanirh/pyxmlpickle/1.0'
+        )
+        print(serialized)
+        rebuilt = xmlpickle.loads(
+            serialized,
+            namespace='pyxp',
+            namespace_uri='https://github.com/fromanirh/pyxmlpickle/1.0'
+        )
+        assert obj == rebuilt
+
     def test_pod_object_roundtrip1(self):
         obj = {
             'containerType': [

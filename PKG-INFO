@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: xmlpickle
-Version: 0.0.1
+Version: 0.0.2
 Summary: Pickle objects to/from XML
 Home-page: https://github.com/fromanirh/pyxmlpickle
 Author: Francesco Romani
